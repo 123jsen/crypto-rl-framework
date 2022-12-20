@@ -10,3 +10,5 @@ This python module acts as an environment in which you can plug in a reinforceme
 - **Reward**: Returns the gain/loss by the player at this timestep, i.e. `bitcoinAmount * todayClose - bitcoinAmount * prevClose`
 
 - **Action**: At this moment, the player can input a number to denote the amount of bitcoin that the agent wants to buy/sell.
+
+Training data is obtained from binance's public API
