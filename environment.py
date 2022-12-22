@@ -29,7 +29,7 @@ class CryptoEnv:
 
         # Previous values
         prevTotalValue = self.BUSD + self.BTC * \
-            self.data[EPISODE_LEN+self.time-1][3]
+            self.data[EPISODE_LEN+self.time-1][0]
 
         # Progress time
         self.time += 1
@@ -40,15 +40,15 @@ class CryptoEnv:
             BUSD = self.BUSD
 
         # amount of BTC purchase, can be +/-
-        purchaseAmount = BUSD / priceState[-1][3]
+        purchaseAmount = BUSD / priceState[-1][0]
         if (purchaseAmount < -self.BTC):  # purchase sold less than total possible
             purchaseAmount = -self.BTC
-            BUSD = purchaseAmount * priceState[-1][3]
+            BUSD = purchaseAmount * priceState[-1][0]
 
         self.BUSD -= BUSD
         self.BTC += purchaseAmount
 
-        newTotalValue = self.BUSD + self.BTC * priceState[-1][3]
+        newTotalValue = self.BUSD + self.BTC * priceState[-1][0]
         reward = newTotalValue - prevTotalValue
 
         # Check done
