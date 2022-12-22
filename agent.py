@@ -29,27 +29,27 @@ class Agent:
         model.add(Dense(64, activation='relu', input_dim=STATE_SIZE))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(ACTION_SIZE, activation='linear'))
-        model.compile(loss='mse', optimizer=Adam(lr=self.lr))
+        model.compile(loss='mse', optimizer=Adam(learning_rate=self.lr))
         return model
 
     def remember(self, state, action, nextState, done, reward):
         self.memory.append((state, action, nextState, done, reward))
 
-    def train(self, batch_size):
-        minibatch = random.sample(self.memory, batch_size)
+    def train(self, batchSize):
+        minibatch = random.sample(self.memory, batchSize)
         for state, action, nextState, done, reward in minibatch:
             target = reward
             if not done:
                 target = (reward + self.gamma *
-                          np.amax(self.model.predict(nextState)[0]))
-                targetF = self.model.predict(state)
+                          np.amax(self.model.predict(nextState, verbose=0)[0]))
+                targetF = self.model.predict(state, verbose=0)
                 targetF[0][action] = target
                 self.model.fit(state, targetF, epochs=1, verbose=0)
-            if self.opsilon > self.epsilonMin:
-                self.epsilon *= self.epsilon_decay
+            if self.epsilon > self.epsilonMin:
+                self.epsilon *= self.epsilonDecay
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(ACTION_SIZE)
-        act_values = self.model.predict(state)
+        act_values = self.model.predict(state, verbose=0)
         return np.argmax(act_values[0])

@@ -42,7 +42,8 @@ class CryptoEnv:
         # amount of BTC purchase, can be +/-
         purchaseAmount = BUSD / priceState[-1][3]
         if (purchaseAmount < -self.BTC):  # purchase sold less than total possible
-            purchaseAmount = self.BTC
+            purchaseAmount = -self.BTC
+            BUSD = purchaseAmount * priceState[-1][3]
 
         self.BUSD -= BUSD
         self.BTC += purchaseAmount
@@ -62,7 +63,7 @@ class CryptoEnv:
     def loadByDate(targetDate: date):
         # Change this path name
         data = CryptoEnv.load(
-            f"./training-data/BTCBUSD-1m-{targetDate.year}-{targetDate.month}/BTCBUSD-1m-{targetDate.year}-{targetDate.month}.csv")
+            f"./training-data/BTCBUSD-1m-{targetDate.year}-{targetDate.month:02}/BTCBUSD-1m-{targetDate.year}-{targetDate.month:02}.csv")
         startIndex = (targetDate.day - 1) * 60 * 24
         endIndex = targetDate.day * 60 * 24
 

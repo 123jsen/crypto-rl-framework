@@ -17,4 +17,4 @@ Every episode of the simulation consists of 1440 timesteps, which loads the most
 
 The demo agent will be DQN based, and it can take the discrete actions: `+100/+50/+10/0/-10/-50/-100`, which buys BTC using `x` amount of BUSD
 
-Training data is price data of BTC to BUSD trading pair, obtained from binance's public API.
+Training data is price data of BTC to BUSD trading pair, obtained from binance's public API. Since the data available goes from Sept 19, 2019 to Nov 30, 2022 (1169 days, inclusive), we will train the agent with 2.5 years of data and test it with 0.5 years of data. The training data will be from 1 Oct 2019 to 31 May 2022 (974 days), and the testing data will be from 30 June 2022 to 30 Nov 2022 (154 days). Some days are bugged due to lack of data on binance api, we will fix the problem later
