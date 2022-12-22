@@ -37,16 +37,20 @@ class Agent:
 
     def train(self, batchSize):
         minibatch = random.sample(self.memory, batchSize)
-        for state, action, nextState, done, reward in minibatch:
+        for i, (state, action, nextState, done, reward) in enumerate(minibatch):
             target = reward
             if not done:
                 target = (reward + self.gamma *
                           np.amax(self.model.predict(nextState, verbose=0)[0]))
-                targetF = self.model.predict(state, verbose=0)
-                targetF[0][action] = target
-                self.model.fit(state, targetF, epochs=1, verbose=0)
+            targetF = self.model.predict(state, verbose=0)
+            targetF[0][action] = target
+            self.model.fit(state, targetF, epochs=1, verbose=0)
+            if (i % 8 == 0):
+                print(f'Training {i/batchSize * 100:.1f}%', end='\r')
         if self.epsilon > self.epsilonMin:
             self.epsilon *= self.epsilonDecay
+        print('Training 100.0%', end='\r')
+        print()
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
