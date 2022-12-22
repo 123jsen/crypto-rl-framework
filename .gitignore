@@ -130,3 +130,6 @@ dmypy.json
 
 # training data
 training-data/
+
+# model saves
+model_output/

@@ -45,11 +45,17 @@ class Agent:
                 targetF = self.model.predict(state, verbose=0)
                 targetF[0][action] = target
                 self.model.fit(state, targetF, epochs=1, verbose=0)
-            if self.epsilon > self.epsilonMin:
-                self.epsilon *= self.epsilonDecay
+        if self.epsilon > self.epsilonMin:
+            self.epsilon *= self.epsilonDecay
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(ACTION_SIZE)
         act_values = self.model.predict(state, verbose=0)
         return np.argmax(act_values[0])
+
+    def save(self, pathname):
+        self.model.save_weights(pathname)
+
+    def load(self, pathname):
+        self.model.load_weights(pathname)
