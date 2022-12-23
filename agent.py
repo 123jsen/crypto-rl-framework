@@ -2,9 +2,7 @@ import numpy as np
 import random
 
 from collections import deque
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.optimizers import Adam
+from model import simpleModel
 
 # 1440 * 5 for stock price, 1 for current BTC, 1 for current BUSD
 STATE_SIZE = 1440 * 5 + 2
@@ -21,16 +19,7 @@ class Agent:
 
         # Other structures
         self.memory = deque(maxlen=2000)
-        self.model = self._buildModel()
-
-    # DQN using simple FCNN
-    def _buildModel(self):
-        model = Sequential()
-        model.add(Dense(64, activation='relu', input_dim=STATE_SIZE))
-        model.add(Dense(64, activation='relu'))
-        model.add(Dense(ACTION_SIZE, activation='linear'))
-        model.compile(loss='mse', optimizer=Adam(learning_rate=self.lr))
-        return model
+        self.model = simpleModel(stateSize=STATE_SIZE, actionSize=ACTION_SIZE, lr=self.lr)
 
     def remember(self, state, action, nextState, done, reward):
         self.memory.append((state, action, nextState, done, reward))
