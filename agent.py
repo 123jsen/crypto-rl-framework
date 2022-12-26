@@ -24,13 +24,13 @@ class Agent:
     def remember(self, state, action, nextState, done, reward):
         self.memory.append((state, action, nextState, done, reward))
 
-    def train(self, batchSize):
+    def train(self, batchSize, targetNetwork):
         minibatch = random.sample(self.memory, batchSize)
         for i, (state, action, nextState, done, reward) in enumerate(minibatch):
             target = reward
             if not done:
                 target = (reward + self.gamma *
-                          np.amax(self.model.predict(nextState, verbose=0)[0]))
+                          np.amax(targetNetwork.predict(nextState, verbose=0)[0]))
             targetF = self.model.predict(state, verbose=0)
             targetF[0][action] = target
             self.model.fit(state, targetF, epochs=1, verbose=0)
