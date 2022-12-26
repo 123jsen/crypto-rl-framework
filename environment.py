@@ -2,9 +2,14 @@ import numpy as np
 from datetime import date, timedelta
 
 EPISODE_LEN = 1440
+STATE_LEN = 720
 
 
 class CryptoEnv:
+    episodeLen = EPISODE_LEN
+    stateLen = STATE_LEN
+
+
     def __init__(self):
         self.time = 0   # time step (in minutes) for simulation
         self.BTC = 0
@@ -21,7 +26,7 @@ class CryptoEnv:
         self.data = np.concatenate((CryptoEnv.loadByDate(targetDate - delta),
                                    CryptoEnv.loadByDate(targetDate)))
 
-        priceState = self.data[self.time:EPISODE_LEN+self.time]
+        priceState = self.data[self.time:STATE_LEN+self.time]
         return (priceState, self.BTC, self.BUSD)
 
     def step(self, BUSD):
@@ -29,11 +34,11 @@ class CryptoEnv:
 
         # Previous values
         prevTotalValue = self.BUSD + self.BTC * \
-            self.data[EPISODE_LEN+self.time-1][0]
+            self.data[STATE_LEN+self.time-1][0]
 
         # Progress time
         self.time += 1
-        priceState = self.data[self.time:EPISODE_LEN+self.time]
+        priceState = self.data[self.time:STATE_LEN+self.time]
 
         # Update values
         if (BUSD > self.BUSD):   # insufficient money for purchase

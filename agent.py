@@ -1,11 +1,12 @@
 import numpy as np
 import random
+from environment import CryptoEnv
 
 from collections import deque
 from model import simpleModel
 
-# 1440 * 5 for stock price, 1 for current BTC, 1 for current BUSD
-STATE_SIZE = 1440 * 5 + 2
+# 720 * 5 for stock price, 1 for current BTC, 1 for current BUSD
+STATE_SIZE = CryptoEnv.stateLen * 5 + 2
 ACTION_SIZE = 7
 
 class Agent:
