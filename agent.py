@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from environment import CryptoEnv
+from datetime import date, timedelta
 
 from collections import deque
 from model import simpleModel
@@ -8,6 +9,13 @@ from model import simpleModel
 # 720 * 5 for stock price, 1 for current BTC, 1 for current BUSD
 STATE_SIZE = CryptoEnv.stateLen * 5 + 2
 ACTION_SIZE = 7
+
+
+def flatten(state):
+    """Returns flattened state"""
+    state = np.concatenate((state[0].flatten(), [state[1]], [state[2]]))
+    return np.reshape(state, (1, -1))
+
 
 class Agent:
     def __init__(self, gamma=0.95, lr=0.001, epsilonDecay=0.995, epsilonMin=0.01):
@@ -20,14 +28,29 @@ class Agent:
 
         # Other structures
         self.memory = deque(maxlen=2000)
-        self.model = simpleModel(stateSize=STATE_SIZE, actionSize=ACTION_SIZE, lr=self.lr)
+        self.model = simpleModel(stateSize=STATE_SIZE,
+                                 actionSize=ACTION_SIZE, lr=self.lr)
 
-    def remember(self, state, action, nextState, done, reward):
-        self.memory.append((state, action, nextState, done, reward))
+    """The state in memory is a """
+
+    def remember(self, episodeDate, time, money, action, done, reward):
+        self.memory.append((episodeDate, time, money, action, done, reward))
 
     def train(self, batchSize, targetNetwork):
         minibatch = random.sample(self.memory, batchSize)
-        for i, (state, action, nextState, done, reward) in enumerate(minibatch):
+        for i, (episodeDate, time, money, action, done, reward) in enumerate(minibatch):
+
+            delta = timedelta(days=1)
+            data = np.concatenate((CryptoEnv.loadByDate(episodeDate - delta),
+                                   CryptoEnv.loadByDate(episodeDate)))
+
+            state = (data[time:CryptoEnv.stateLen + time], money[0], money[1])
+            nextState = (data[time + 1:CryptoEnv.stateLen +
+                         time + 1], money[2], money[3])
+
+            state = flatten(state)
+            nextState = flatten(nextState)
+
             target = reward
             if not done:
                 target = (reward + self.gamma *
@@ -42,10 +65,10 @@ class Agent:
         print('Training 100.0%', end='\r')
         print()
 
-    def act(self, state):
+    def act(self, flatState):
         if np.random.rand() <= self.epsilon:
             return random.randrange(ACTION_SIZE)
-        act_values = self.model.predict(state, verbose=0)
+        act_values = self.model.predict(flatState, verbose=0)
         return np.argmax(act_values[0])
 
     def save(self, pathname):
